@@ -1,0 +1,100 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.3.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-enterprise-kafka:5.3.1
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+  
+  connect:
+    image: confluentinc/cp-kafka-connect:5.3.1
+    hostname: connect
+    container_name: connect
+    depends_on: 
+      - broker
+    ports:
+      - "28082:28082"
+    environment: 
+      CONNECT_BOOTSTRAP_SERVERS: broker:9092
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "quickstart"
+      CONNECT_CONFIG_STORAGE_TOPIC: "quickstart-config" 
+      CONNECT_OFFSET_STORAGE_TOPIC: "quickstart-offsets" 
+      CONNECT_STATUS_STORAGE_TOPIC: "quickstart-status" 
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter" 
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect" 
+      CONNECT_PLUGIN_PATH: "/usr/share/java" 
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+  
+  ksqldb-server:
+    image: confluentinc/ksqldb-server:0.6.0
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    depends_on:
+      - broker
+    ports:
+      - "8088:8088"
+    
+    environment:
+      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_BOOTSTRAP_SERVERS: broker:9092
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_KSQL_CONNECT_URL: http://connect:8083
+
+  ksqldb-cli:
+    image: confluentinc/ksqldb-cli:0.6.0
+    container_name: ksqldb-cli
+    depends_on:
+      - broker
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://postgres/postgres -schemas=public -user=postgres -password=postgres -connectRetries=60 migrate
+    volumes:
+      - ./migrations:/flyway/sql
+    depends_on:
+      - postgres
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
