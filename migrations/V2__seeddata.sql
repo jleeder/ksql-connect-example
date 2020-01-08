@@ -1,3 +1,7 @@
+TRUNCATE options;
+TRUNCATE product_option_values;
+TRUNCATE products;
+
 INSERT INTO "postgres"."public"."products" (
     company_id,
     created_by,
@@ -23,13 +27,23 @@ INSERT INTO options (
 )
 VALUES
 (
-    "size",
-    "Size",
-    "a60c76b4-85e8-4f52-85fe-7a9af10299da"
+    'size',
+    'Size',
+    'a60c76b4-85e8-4f52-85fe-7a9af10299da'
 );
 
-
-
+INSERT INTO product_option_values (
+    option_id,
+    product_id,
+    product_option_value_id,
+    value
+)
+VALUES (
+    'a60c76b4-85e8-4f52-85fe-7a9af10299da',
+    '39716673-be6b-481d-a9ff-f28db2eae195',
+    '214b1269-92f9-47e8-9978-336fc0f5ad54',
+    'S'
+);
 
 --   UPDATE products
 --   SET 
@@ -37,3 +51,10 @@ VALUES
 --   where product_id = '39716673-be6b-481d-a9ff-f28db2eae195'
 
 --   DELETE from products where product_id = '39716673-be6b-481d-a9ff-f28db2eae195'
+
+
+
+UPDATE options
+SET 
+     name = 'sizechange'
+where option_id = 'a60c76b4-85e8-4f52-85fe-7a9af10299da'
