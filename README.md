@@ -6,7 +6,7 @@
 
 ### KSQL STREAMS from DEBEZIUM TOPICS
 ```
-create stream db_options (option_id varchar, inturn_type varchar, name varchar, type varchar, updated_at bigint, created_at bigint, deleted_at bigint) 
+create stream db_options (option_id varchar, inturn_type varchar, name varchar, type varchar, updated_at bigint, created_at bigint, deleted_at bigint, __deleted varchar, __ts_ms bigint) 
     WITH (kafka_topic = 'productservice.public.options', value_format = 'json');
 
 create stream db_product_options_values (product_option_values varchar, option_id varchar, product_id varchar, value varchar, updated_at bigint, created_at bigint, deleted_at bigint) 

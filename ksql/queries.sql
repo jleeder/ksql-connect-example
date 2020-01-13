@@ -12,6 +12,7 @@ CREATE SOURCE CONNECTOR `productservice-connector` WITH(
     "transforms.unwrap.operation.header"=true,
     "transforms.unwrap.delete.handling.mode"='rewrite',
     "transforms.unwrap.drop.tombstones"=true,
+    "transforms.unwrap.add.source.fields"='lsn,txId,ts_ms',
     "key.converter"='org.apache.kafka.connect.json.JsonConverter',
     "key.converter.schemas.enable"=false,
     "value.converter"='org.apache.kafka.connect.json.JsonConverter',
