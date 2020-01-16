@@ -56,5 +56,5 @@ VALUES (
 
 UPDATE options
 SET 
-     name = 'sizechange'
+     name = 'size'
 where option_id = 'a60c76b4-85e8-4f52-85fe-7a9af10299da'

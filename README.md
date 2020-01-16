@@ -34,3 +34,7 @@ rekey t_variant_product_options_values (product_option_value_id)
 variant_options (product_option_value_id)= rekeyed_t_variant_product_options_values + rekeyed_product_options 
 rekey_variant_options (variant_id)
 variants = t_variants + variant_options
+
+
+
+CREATE STREAM es_sink_err_stream (MSG VARCHAR) WITH (KAFKA_TOPIC='es_sink_err', VALUE_FORMAT='DELIMITED');
