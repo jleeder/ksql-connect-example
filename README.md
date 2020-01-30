@@ -9,7 +9,10 @@
 create stream db_options (option_id varchar, inturn_type varchar, name varchar, type varchar, updated_at bigint, created_at bigint, deleted_at bigint, __deleted varchar, __ts_ms bigint) 
     WITH (kafka_topic = 'productservice.public.options', value_format = 'json');
 
-create stream db_product_options_values (product_option_values varchar, option_id varchar, product_id varchar, value varchar, updated_at bigint, created_at bigint, deleted_at bigint) 
+create table t_options (option_id varchar, inturn_type varchar, name varchar, type varchar, updated_at bigint, created_at bigint, deleted_at bigint, __deleted varchar, __ts_ms bigint) 
+    WITH (kafka_topic = 'DB_OPTIONS_REPART', value_format = 'json', key='option_id');
+
+create stream db_pov (product_option_value_id varchar, option_id varchar, product_id varchar, value varchar, updated_at bigint, created_at bigint, deleted_at bigint) 
     WITH (kafka_topic = 'productservice.public.product_option_values', value_format = 'json');
 
 create stream db_products (product_id varchar, title varchar, description varchar, sku varchar, attribute_values array<map<varchar,varchar>>, company_id varchar, created_by varchar, created_at bigint, updated_at bigint, deleted_at bigint, __deleted BOOLEAN)
@@ -18,8 +21,8 @@ create stream db_products (product_id varchar, title varchar, description varcha
 
 ### KSQL STREAMS REKEYED BY REAL ID
 ```
-create stream db_options_rk_option AS select * from db_options PARTITION BY option_id;
-create stream db_product_options_values_rk_option AS select * from db_product_options_values PARTITION BY option_id;
+create stream db_options_repart AS select * from db_options PARTITION BY option_id;
+create stream db_pov_repart AS select * from db_pov PARTITION BY product_id;
 ```
 ### KSQL TABLES from TOPIC STREAMS
 ```

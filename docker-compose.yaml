@@ -35,6 +35,7 @@ services:
       - broker
     volumes:
       - ./kafka-connect/jars/debezium-connector-postgres:/usr/share/java/debezium-connector-postgres
+      - ./connect-log4j.properties:/etc/kafka/connect-log4j.properties
     ports:
       - "28082:28082"
     environment: 

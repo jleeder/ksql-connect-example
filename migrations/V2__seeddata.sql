@@ -15,8 +15,8 @@ VALUES
     '94b706e6-e893-4bb5-95db-e9be4da921cf',
     'b153c707-8717-4f1c-9c20-13d99fcf5d1a',
     'a great product description',
-    '39716673-be6b-481d-a9ff-f28db2eae195',
-    'SKU12345',
+    '39716673-be6b-481d-a9ff-f28db2eae196',
+    'SKU123458',
     'Great Product Title'
   );
 
@@ -57,4 +57,26 @@ VALUES (
 UPDATE options
 SET 
      name = 'size'
-where option_id = 'a60c76b4-85e8-4f52-85fe-7a9af10299da'
+where option_id = 'a60c76b4-85e8-4f52-85fe-7a9af10299da';
+
+-- UPDATE products
+-- SET
+--   attributes_values = '[]'
+-- WHERE product_id = '39716673-be6b-481d-a9ff-f28db2eae195';
+
+-- UPDATE products
+-- SET
+--   title = 'change title again'
+-- WHERE product_id = '39716673-be6b-481d-a9ff-f28db2eae195';
+
+-- ALTER TABLE products REPLICA IDENTITY FULL;
+
+
+-- SELECT CASE relreplident
+--           WHEN 'd' THEN 'default'
+--           WHEN 'n' THEN 'nothing'
+--           WHEN 'f' THEN 'full'
+--           WHEN 'i' THEN 'index'
+--        END AS replica_identity
+-- FROM pg_class
+-- WHERE oid = 'products'::regclass;

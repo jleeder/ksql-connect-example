@@ -11,7 +11,7 @@ CREATE SOURCE CONNECTOR `productservice-connector` WITH(
     "transforms.unwrap.type"='io.debezium.transforms.ExtractNewRecordState',
     "transforms.unwrap.operation.header"=true,
     "transforms.unwrap.delete.handling.mode"='rewrite',
-    "transforms.unwrap.drop.tombstones"=true,
+    "transforms.unwrap.drop.tombstones"=false,
     "transforms.unwrap.add.source.fields"='lsn,txId,ts_ms',
     "key.converter"='org.apache.kafka.connect.json.JsonConverter',
     "key.converter.schemas.enable"=false,
@@ -23,18 +23,21 @@ CREATE SOURCE CONNECTOR `productservice-connector` WITH(
 CREATE SINK CONNECTOR `elasticsearch-connector` WITH(
     "connector.class"='io.confluent.connect.elasticsearch.ElasticsearchSinkConnector',
     "connection.url"='http://elasticsearch:9200',
-    "topics"='productservice.public.options',
+    "topics"='DB_OPTIONS_REPART',
     "type.name"='options',
     "value.converter"='org.apache.kafka.connect.json.JsonConverter',
     "value.converter.schemas.enable"=false,
-    "key.converter"='org.apache.kafka.connect.json.JsonConverter',
+    "key.converter"='org.apache.kafka.connect.storage.StringConverter',
     "key.converter.schemas.enable"=false,
-    "errors.tolerance"='all',
-    "errors.deadletterqueue.topic.name"='es_sink_err',
-    "errors.deadletterqueue.topic.replication.factor"=1,
-    "errors.deadletterqueue.context.headers.enable"=true,
-    "errors.retry.delay.max.ms"= 60000,
-    "errors.retry.timeout"= 300000
+    "schema.ignore"=true,
+    "key.ignore"=false
 );
 -- key and value convertors control the serialization
 -- schemas.enables changes the payload from shema/payload to just root values
+
+ "transforms"='unwrap',
+    "transforms.unwrap.type"='io.debezium.transforms.ExtractNewRecordState',
+    "transforms.unwrap.operation.header"=true,
+    "transforms.unwrap.delete.handling.mode"='rewrite',
+    "transforms.unwrap.drop.tombstones"=false,
+    "transforms.unwrap.add.source.fields"='lsn,txId,ts_ms',
