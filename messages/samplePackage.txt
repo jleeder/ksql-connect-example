@@ -1,0 +1,1 @@
+package-uuid-2:{"id":"package-uuid-2","title":"displaytitleforthepackage","inturnPackageId":"uniquederivableinternalpackageid","type":"multi","unitsPerPackage":10,"variants":[{"variantId":"variantuuid-1","ratio":1}, {"variantId":"variantuuid-5","ratio":1}]}

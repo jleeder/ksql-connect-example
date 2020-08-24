@@ -1,0 +1,51 @@
+//ProductVariant
+{
+    "id": "varaint-uuid",
+    //product
+    "sku": "product-sku",
+    "productId": "product-uuid",
+    "productTitle": "product-title",
+    "companyId": "company-uuid",
+    //"updatedAt": "timestamp", //not sure what these should be product / variant
+    //"deletedAt": "timestamp",
+    "attributes": [ 
+        //nested
+        {
+            "label": "attribute display label",
+            "inturnType": "normalized attribute label value for searching",
+            "value": "the value "
+        }
+    ],
+    //variant
+    "upc": "variant-upc",
+    "inturnVariantId": "unique derivable internal variant id",
+    "position": "position when sorting other variants of the same product",
+    "description": "variant-description",
+    "options": [
+        //nested
+        {
+            "productOptionId": "product option id",
+            "productOptionValueId": "product option value id",
+            //not sure the above ids are needed
+            "type": "type of value: STRING is all we have now",
+            "name": "display value of option",
+            "inturnType": "normalized option name value",
+            "value": "the actual value for the option"
+        }
+    ],
+    "pricing": [
+        {
+            "marketId": "market-uuid",
+            "marketName": "market code",
+            "currencyCode": "currency code",
+            "prices": [
+                {
+                    "priceTypeId": "price type id",
+                    "priceDescription": "price description (wholesale, retail, suggested, etc",
+                    "amount": 0.01
+                }
+            ]
+        }
+    ]
+}
+

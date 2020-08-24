@@ -1,0 +1,17 @@
+ //Package
+ {
+     "id": "package-uuid",
+     //"productIds": ["product-uuid1", "product-uuid2"],
+     //"skus": ["sku1", "sku2"],
+     "title": "display title for the package",
+     "inturnPackageId": "unique derivable internal package id",
+     "type": "package type (loose, multi, single)", 
+     "unitsPerPackage": "sum of ratios",
+     "variants": [
+         //nested
+         {
+             "variantId": "variant-uuid",
+             "ratio": "number of variant in package"
+         }
+     ]
+ }

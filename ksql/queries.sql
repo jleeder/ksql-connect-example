@@ -35,9 +35,9 @@ CREATE SINK CONNECTOR `elasticsearch-connector` WITH(
 -- key and value convertors control the serialization
 -- schemas.enables changes the payload from shema/payload to just root values
 
- "transforms"='unwrap',
-    "transforms.unwrap.type"='io.debezium.transforms.ExtractNewRecordState',
-    "transforms.unwrap.operation.header"=true,
-    "transforms.unwrap.delete.handling.mode"='rewrite',
-    "transforms.unwrap.drop.tombstones"=false,
-    "transforms.unwrap.add.source.fields"='lsn,txId,ts_ms',
+--  "transforms"='unwrap',
+--     "transforms.unwrap.type"='io.debezium.transforms.ExtractNewRecordState',
+--     "transforms.unwrap.operation.header"=true,
+--     "transforms.unwrap.delete.handling.mode"='rewrite',
+--     "transforms.unwrap.drop.tombstones"=false,
+--     "transforms.unwrap.add.source.fields"='lsn,txId,ts_ms',

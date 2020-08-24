@@ -1,0 +1,5 @@
+{
+    "packageId": "package-uuid",
+    "groupId": "group-uuid",
+    "quantity": "value of the package in that group"
+}
