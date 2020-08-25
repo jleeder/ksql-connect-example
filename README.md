@@ -1,6 +1,6 @@
 ### Reset Application
 ```
-kafkatools/kafka_2.13-2.6.0/bin/kafka-streams-application-reset.sh --application-id denormalizer --input-topics product-variants,packages --bootstrap-servers 0.0.0.0:29092
+kafkatools/kafka_2.13-2.6.0/bin/kafka-streams-application-reset.sh --application-id denormalizer --input-topics product-variants,packages,package-quantities --bootstrap-servers 0.0.0.0:29092
 ```
 
 ### Delete Topics
@@ -21,6 +21,8 @@ kafkatools/kafka_2.13-2.6.0/bin/kafka-topics.sh --bootstrap-server 0.0.0.0:29092
 kafkacat -b 0.0.0.0:29092 -t packages -P -l -K : ./messages/samplePackage.txt 
 
 kafkacat -b 0.0.0.0:29092 -t product-variants -P -l -K : ./messages/samplePV.txt
+
+kafkacat -b 0.0.0.0:29092 -t package-quantities -P -l -K : ./messages/samplePQ.txt
 ```
 
 ### Listen for Messages on CLI

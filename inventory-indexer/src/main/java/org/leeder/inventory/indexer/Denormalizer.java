@@ -98,7 +98,7 @@ public class Denormalizer {
     }
 
     static public class ProductVariantWithPackages extends ProductVariant{
-        public List<Package> packages;
+        public List<PackageWithQuantities> packages;
 
 
         public ProductVariantWithPackages(ProductVariant variant){
@@ -122,6 +122,22 @@ public class Denormalizer {
         public String packageId;
         public String groupId;
         public long quantity;
+    }
+
+    static public class PackageWithQuantities extends Package{
+        public List<PackageQuantity> quantities;
+
+        public PackageWithQuantities(){
+            
+        }
+        public PackageWithQuantities(Package p){
+            this.id = p.id;
+            this.inturnPackageId = p.inturnPackageId;
+            this.title = p.title;
+            this.type = p.type;
+            this.unitsPerPackage = p.unitsPerPackage;
+            this.variants = p.variants;
+        }
     }
     //#endregion
 
@@ -149,6 +165,10 @@ public class Denormalizer {
         JsonDeserializer<Package> packageDeserializer = new JsonDeserializer<>(Package.class);
         Serde<Package> packageSerde = Serdes.serdeFrom(packageSerializer, packageDeserializer);
 
+        final Serializer<PackageWithQuantities> packageWithQuantitiesSerializer = new JsonSerializer<>();
+        JsonDeserializer<PackageWithQuantities> packagewithQuantitiesDeserializer = new JsonDeserializer<>(PackageWithQuantities.class);
+        Serde<PackageWithQuantities> packageWithQuantitiesSerde = Serdes.serdeFrom(packageWithQuantitiesSerializer, packagewithQuantitiesDeserializer);
+
         final Serializer<PackageQuantity> packageQuantitySerializer = new JsonSerializer<>();
         JsonDeserializer<PackageQuantity> packageQuantityDeserializer = new JsonDeserializer<>(PackageQuantity.class);
         Serde<PackageQuantity> packageQuantitySerde = Serdes.serdeFrom(packageQuantitySerializer, packageQuantityDeserializer);
@@ -161,67 +181,83 @@ public class Denormalizer {
         JsonDeserializer<ProductVariantWithPackages> variantWithPackagesDeserializer = new JsonDeserializer<ProductVariantWithPackages>(ProductVariantWithPackages.class);
         Serde<ProductVariantWithPackages> variantWithPackagesSerde = Serdes.serdeFrom(variantWithPackagesSerializer, variantWithPackagesDeserializer);
         
-        final Serializer<HashMap<String,Package>> packageMapSerializer = new JsonSerializer<HashMap<String,Package>>();
-        JsonDeserializer<HashMap<String,Package>> packageMapDeserializer = new JsonDeserializer<HashMap<String,Package>>((Class<HashMap<String, Package>>)(Object)HashMap.class);
-        Serde<HashMap<String,Package>> packageMapSerde = Serdes.serdeFrom(packageMapSerializer, packageMapDeserializer);
+        final Serializer<HashMap<String,PackageWithQuantities>> packageMapSerializer = new JsonSerializer<HashMap<String,PackageWithQuantities>>();
+        JsonDeserializer<HashMap<String,PackageWithQuantities>> packageMapDeserializer = new JsonDeserializer<HashMap<String,PackageWithQuantities>>((Class<HashMap<String, PackageWithQuantities>>)(Object)HashMap.class);
+        Serde<HashMap<String,PackageWithQuantities>> packageMapSerde = Serdes.serdeFrom(packageMapSerializer, packageMapDeserializer);
+        
+        final Serializer<HashMap<String,PackageQuantity>> packageQuantityMapSerializer = new JsonSerializer<HashMap<String,PackageQuantity>>();
+        JsonDeserializer<HashMap<String,PackageQuantity>> packageQuantityMapDeserializer = new JsonDeserializer<HashMap<String,PackageQuantity>>((Class<HashMap<String, PackageQuantity>>)(Object)HashMap.class);
+        Serde<HashMap<String,PackageQuantity>> packageQuantityMapSerde = Serdes.serdeFrom(packageQuantityMapSerializer, packageQuantityMapDeserializer);
         
         //#endregion
         
         KTable<String, ProductVariant> tProductVariants = builder.table("product-variants", Consumed.with(Serdes.String(), productVariantSerde));
         //KTable<String, Package> tbl_packages = builder.table("packages", Consumed.with(Serdes.String(), packageSerde));
-        KStream<String, Package> sPackages = builder.stream("packages", Consumed.with(Serdes.String(), packageSerde));
+        KTable<String, Package> sPackages = builder.table("packages", Consumed.with(Serdes.String(), packageSerde));
 
         KStream<String, PackageQuantity> sPackageQuantity = builder.stream("package-quantities", Consumed.with(Serdes.String(), packageQuantitySerde));
 
-        KTable<String, HashMap<String, Package>> tvariantPkgs = sPackages.flatMap((key, pkg) -> {
-            
-            /**
-             * Rekey package object by the variant ids it contains 
-             * Outputs a stream of packages per variant so it can be joined with variants later
-             */
-
-            List<KeyValue<String, Package>> result = new ArrayList<KeyValue<String, Package>>();
-            pkg.variants.forEach((variant) -> {
-                result.add(KeyValue.pair(variant.variantId, pkg));
-            });
-            return result;  
-        })
-        .groupByKey(Grouped.with(Serdes.String(), packageSerde)) //group by key which is variantId after flatMap
-        .aggregate(
-            //initializer
-            () -> new HashMap<String, Package>(),
-            //aggregation method
-            (key, pkg, packages) -> {
+        KTable<String, HashMap<String, PackageQuantity>> tPackageQuantity = sPackageQuantity
+            .groupByKey(Grouped.with(Serdes.String(), packageQuantitySerde))
+            .aggregate(
+                () -> new HashMap<String, PackageQuantity>(),
+                (key, pq, pkgQty) -> {
+                    
+                    pkgQty.put(pq.groupId, pq);
+                    return pkgQty;
+                },
+                Materialized.with(Serdes.String(), packageQuantityMapSerde)
+            );
+        
+        KTable<String, HashMap<String, PackageWithQuantities>> tvariantPkgs = sPackages
+            .leftJoin(tPackageQuantity, (pkg, pkgQty) -> {
+                PackageWithQuantities result = new PackageWithQuantities(pkg);
+                if (pkgQty == null){
+                    result.quantities = new ArrayList<PackageQuantity>();
+                }
+                else{
+                    result.quantities = new ArrayList<PackageQuantity>(pkgQty.values());
+                }
+                return result;
+            }).toStream().flatMap((key, pkg) -> {
                 /**
-                 * Keep running map of packages per variant
-                 */ 
-                packages.put(pkg.id, pkg);
-                return packages;
-            },
-            Materialized.with(Serdes.String(), packageMapSerde)
-        );
+                 * Rekey package object by the variant ids it contains 
+                 * Outputs a stream of packages per variant so it can be joined with variants later
+                 */
 
-        //tvariantPkgs.toStream().to("output", Produced.with(Serdes.String(), packagesListSerde));
+                List<KeyValue<String, PackageWithQuantities>> result = new ArrayList<KeyValue<String, PackageWithQuantities>>();
+                pkg.variants.forEach((variant) -> {
+                    result.add(KeyValue.pair(variant.variantId, pkg));
+                });
+                return result;  
+            })
+            .groupByKey(Grouped.with(Serdes.String(), packageWithQuantitiesSerde)) //group by key which is variantId after flatMap
+            .aggregate(
+                //initializer
+                () -> new HashMap<String, PackageWithQuantities>(),
+                //aggregation method
+                (key, pkg, packages) -> {
+                    /**
+                     * Keep running map of packages per variant
+                     */ 
+                    packages.put(pkg.id, pkg);
+                    return packages;
+                },
+                Materialized.with(Serdes.String(), packageMapSerde)
+            );
 
-        tProductVariants.leftJoin(tvariantPkgs, (variant, pkgs) -> {
+        tProductVariants.join(tvariantPkgs, (variant, pkgs) -> {
             ProductVariantWithPackages result = new ProductVariantWithPackages(variant);
             if (pkgs == null){
-                result.packages = new ArrayList<Package>();
+                result.packages = new ArrayList<PackageWithQuantities>();
             }
             else {
-                result.packages = new ArrayList<Package>(pkgs.values());
+                result.packages = new ArrayList<PackageWithQuantities>(pkgs.values());
             }
 
             return result;
         }).toStream().to("output", Produced.with(Serdes.String(), variantWithPackagesSerde));
-        //.toStream().foreach((key, value) -> System.out.println("Joined: Key " + key + " Size " + value.packages.size()));;
-        //.toStream().print(Printed.toSysOut());
-        //packagesByVariant.foreach((key, value) -> System.out.println("Key: " + key + " Package: " + value.id));
-        //tProductVariants.toStream().foreach((key, value) -> System.out.println("Key: " + key + " PV: " + value.id));
-
-        // packagesByVariant.join(tProductVariants, (pkg, variant) -> {
-        //     return pkg.inturnPackageId + " " + variant.inturnVariantId;
-        // }).foreach( (key, value) -> System.out.println("Joined: Key " + key + " Value " + value));
+        
         
 
         final Topology topology = builder.build();
