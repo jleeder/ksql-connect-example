@@ -1,1 +1,1 @@
-package-uuid-2:{"packageId": "package-uuid-2","groupId": "group-uuid-2", "quantity": 700}
+package-uuid-2:{"packageId": "package-uuid-2","groupId": "group-uuid-2", "quantity": 222}

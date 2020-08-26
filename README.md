@@ -30,6 +30,11 @@ kafkacat -b 0.0.0.0:29092 -t package-quantities -P -l -K : ./messages/samplePQ.t
 kafkacat -b 0.0.0.0:29092 -t output -C
 ```
 
+### Start ES Sink
+```
+curl -s -X POST -H 'Content-Type: application/json' --data @connect-file-source.json http://localhost:8083/connectors
+```
+
 Caching output data can cause weird delays, by default 30 seconds. https://docs.confluent.io/current/streams/developer-guide/memory-mgmt.html
 
 https://debezium.io/documentation/reference/1.0/connectors/postgresql.html

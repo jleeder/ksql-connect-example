@@ -209,8 +209,9 @@ public class Denormalizer {
                 Materialized.with(Serdes.String(), packageQuantityMapSerde)
             );
         
-        KTable<String, HashMap<String, PackageWithQuantities>> tvariantPkgs = sPackages
-            .leftJoin(tPackageQuantity, (pkg, pkgQty) -> {
+        //KTable<String, HashMap<String, PackageWithQuantities>> tvariantPkgs = 
+        sPackages
+            .join(tPackageQuantity, (pkg, pkgQty) -> {
                 PackageWithQuantities result = new PackageWithQuantities(pkg);
                 if (pkgQty == null){
                     result.quantities = new ArrayList<PackageQuantity>();
@@ -244,18 +245,17 @@ public class Denormalizer {
                     return packages;
                 },
                 Materialized.with(Serdes.String(), packageMapSerde)
-            );
+            )
+            .join(tProductVariants, (pkgs, variant) -> {
+                ProductVariantWithPackages result = new ProductVariantWithPackages(variant);
+                if (pkgs == null){
+                    result.packages = new ArrayList<PackageWithQuantities>();
+                }
+                else {
+                    result.packages = new ArrayList<PackageWithQuantities>(pkgs.values());
+                }
 
-        tProductVariants.join(tvariantPkgs, (variant, pkgs) -> {
-            ProductVariantWithPackages result = new ProductVariantWithPackages(variant);
-            if (pkgs == null){
-                result.packages = new ArrayList<PackageWithQuantities>();
-            }
-            else {
-                result.packages = new ArrayList<PackageWithQuantities>(pkgs.values());
-            }
-
-            return result;
+                return result;
         }).toStream().to("output", Produced.with(Serdes.String(), variantWithPackagesSerde));
         
         
