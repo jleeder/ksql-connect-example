@@ -1,1 +1,6 @@
-package-uuid-2:{"packageId": "package-uuid-2","groupId": "group-uuid-2", "quantity": 222}
+package-uuid-1:{"packageId": "package-uuid-1","groupId": "group-uuid-1", "quantity": 100}
+package-uuid-2:{"packageId": "package-uuid-2","groupId": "group-uuid-1", "quantity": 200}
+package-uuid-3:{"packageId": "package-uuid-3","groupId": "group-uuid-1", "quantity": 300}
+package-uuid-4:{"packageId": "package-uuid-4","groupId": "group-uuid-1", "quantity": 400}
+package-uuid-5:{"packageId": "package-uuid-5","groupId": "group-uuid-1", "quantity": 500}
+package-uuid-6:{"packageId": "package-uuid-6","groupId": "group-uuid-1", "quantity": 600}

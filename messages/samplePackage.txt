@@ -1,1 +1,6 @@
-package-uuid-2:{"id":"package-uuid-2","title":"displaytitleforthepackage","inturnPackageId":"uniquederivableinternalpackageid","type":"loose","unitsPerPackage":1,"variants":[{"variantId":"variantuuid-2","ratio":1}]}
+package-uuid-1:{"id":"package-uuid-1","title":"Package 1","inturnPackageId":"uniquederivableinternalpackageid-1","type":"loose","unitsPerPackage":1,"variants":[{"variantId":"variant-uuid-1","ratio":1}]}
+package-uuid-2:{"id":"package-uuid-2","title":"Package 3","inturnPackageId":"uniquederivableinternalpackageid-2","type":"loose","unitsPerPackage":1,"variants":[{"variantId":"variant-uuid-2","ratio":1}]}
+package-uuid-3:{"id":"package-uuid-3","title":"Package 3","inturnPackageId":"uniquederivableinternalpackageid-3","type":"loose","unitsPerPackage":1,"variants":[{"variantId":"variant-uuid-3","ratio":1}]}
+package-uuid-4:{"id":"package-uuid-4","title":"Package 4","inturnPackageId":"uniquederivableinternalpackageid-4","type":"single","unitsPerPackage":3,"variants":[{"variantId":"variant-uuid-1","ratio":1},{"variantId":"variant-uuid-2","ratio":1},{"variantId":"variant-uuid-3","ratio":1}]}
+package-uuid-5:{"id":"package-uuid-5","title":"Package 5","inturnPackageId":"uniquederivableinternalpackageid-5","type":"loose","unitsPerPackage":1,"variants":[{"variantId":"variant-uuid-4","ratio":1}]}
+package-uuid-6:{"id":"package-uuid-6","title":"Package 6","inturnPackageId":"uniquederivableinternalpackageid-6","type":"multi","unitsPerPackage":2,"variants":[{"variantId":"variant-uuid-1","ratio":1},{"variantId":"variant-uuid-4","ratio":1}]}

@@ -1,0 +1,3 @@
+package-uuid-1:{"packageId": "package-uuid-1","groupId": "group-uuid-1", "quantity": 11}
+package-uuid-3:{"packageId": "package-uuid-3","groupId": "group-uuid-1", "quantity": 33}
+package-uuid-6:{"packageId": "package-uuid-6","groupId": "group-uuid-1", "quantity": 66}
