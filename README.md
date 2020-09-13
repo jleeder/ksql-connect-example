@@ -8,6 +8,8 @@ kafkatools/kafka_2.13-2.6.0/bin/kafka-streams-application-reset.sh --application
 kafkatools/kafka_2.13-2.6.0/bin/kafka-topics.sh --bootstrap-server 0.0.0.0:29092 --delete --topic product-variants
 
 kafkatools/kafka_2.13-2.6.0/bin/kafka-topics.sh --bootstrap-server 0.0.0.0:29092 --delete --topic packages
+
+kafkatools/kafka_2.13-2.6.0/bin/kafka-topics.sh --bootstrap-server 0.0.0.0:29092 --delete --topic package-quantities
 ```
 ### Utility
 ```
@@ -32,7 +34,7 @@ kafkacat -b 0.0.0.0:29092 -t output -C
 
 ### Start ES Sink
 ```
-curl -s -X POST -H 'Content-Type: application/json' --data @connect-file-source.json http://localhost:8083/connectors
+curl -s -X POST -H 'Content-Type: application/json' --data @connect-es-sink.json http://localhost:8083/connectors
 ```
 
 Caching output data can cause weird delays, by default 30 seconds. https://docs.confluent.io/current/streams/developer-guide/memory-mgmt.html

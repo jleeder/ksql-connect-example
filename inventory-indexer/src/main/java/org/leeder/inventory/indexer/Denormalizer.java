@@ -150,7 +150,9 @@ public class Denormalizer {
         
         // setting offset reset to earliest so that we can re-run the demo code with the same pre-loaded data
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);                                                                     // machine with port
+        //props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);      
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 4);                                                              // machine with port
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 500);
         //props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         //props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         //props.list(System.out);
@@ -211,7 +213,7 @@ public class Denormalizer {
         
         //KTable<String, HashMap<String, PackageWithQuantities>> tvariantPkgs = 
         sPackages
-            .join(tPackageQuantity, (pkg, pkgQty) -> {
+            .leftJoin(tPackageQuantity, (pkg, pkgQty) -> {
                 PackageWithQuantities result = new PackageWithQuantities(pkg);
                 if (pkgQty == null){
                     result.quantities = new ArrayList<PackageQuantity>();
